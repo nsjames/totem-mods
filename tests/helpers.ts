@@ -17,5 +17,5 @@ export const resetBlockchainTables = async (store: TableStore) => {
 }
 
 export const setup = async () => {
-
+    // test
 }

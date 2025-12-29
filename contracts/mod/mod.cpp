@@ -12,9 +12,9 @@ class [[eosio::contract("mod")]] mod : public contract {
    public:
     using contract::contract;
 
-
     [[eosio::on_notify(TOTEMS_CREATED_NOTIFY)]]
     void on_created(const name& creator, const symbol& ticker){
+
     }
 
     [[eosio::on_notify(TOTEMS_MINT_NOTIFY)]]
