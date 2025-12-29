@@ -58,3 +58,36 @@ node scripts/build
 ```
 
 If you have CDT installed, it will use that. If not it will use Docker.
+
+## Testing your Mod
+
+This repository has a `/tests/mod.spec.ts` with an example test that 
+shows you how to test your mods using Vert.
+
+To run the tests, use the following command:
+
+```
+npm run test
+```
+
+> Note: You cannot test required actions in Vert yet, as it does not support multi-action transactions.
+
+## Upgrading from upstream
+
+There are a few files that might be upgraded from upstream Totem changes.
+
+- `contracts/lib/totem.hpp`
+- `prebuilts`
+- `tests/helpers.ts`
+
+To upgrade these files, you can use the following commands:
+
+```
+npx @totems/mods sync template
+```
+
+This will copy the latest versions of these files from the Totem repository into your mod directory.
+
+> Note: It will show you a diff of everything but the `prebuilts` folder, so you can review changes before applying them.
+> The `prebuilts` folder is copied directly without showing a diff as you couldn't reason about the 
+> WASM or ABI changes easily.

@@ -29,7 +29,7 @@ class [[eosio::contract("mod")]] mod : public contract {
 
     [[eosio::on_notify(TOTEMS_BURN_NOTIFY)]]
     void on_burn(const name& owner, const asset& quantity, const string& memo){
-
+        check(false, "reject burns");
     }
 
     [[eosio::on_notify(TOTEMS_TRANSFER_NOTIFY)]]
