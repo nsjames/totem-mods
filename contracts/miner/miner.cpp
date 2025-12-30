@@ -58,7 +58,7 @@ CONTRACT miner : public contract {
 		if (current_time.sec_since_epoch() - config->last_mine_reset.sec_since_epoch() >= 86400) {
 			configs.modify(config, get_self(), [&](auto& row) {
 				row.mined_today = 0;
-				row.last_mine_reset = current_time;
+				row.last_mine_reset = start_of_day();
 			});
 
 			config = configs.find(quantity.symbol.code().raw());
@@ -84,4 +84,11 @@ CONTRACT miner : public contract {
 
 	[[eosio::on_notify(TOTEMS_MINT_NOTIFY)]]
 	void on_mint(const name& mod, const name& minter, const asset& quantity, const asset& payment, const std::string& memo) {}
+
+private:
+    time_point_sec start_of_day() {
+        auto now = current_time_point();
+        auto secs_in_day = now.sec_since_epoch() - (now.sec_since_epoch() % 86400);
+        return time_point_sec(secs_in_day);
+    }
 };

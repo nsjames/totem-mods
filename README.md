@@ -26,7 +26,7 @@ Allows wrapping/unwrapping tokens to Totems from either standard `eosio.token` t
 <summary>Click to see details</summary>
 
 **Setup:**
-- `wrapper::setup` - Must be called to set up the wrapping configuration:
+- `mod::setup` - Must be called to set up the wrapping configuration:
   - `totem_ticker` - The totem ticker to set up wrapping for
   - `wrappable_ticker` - The underlying token ticker that can be wrapped
   - `wrappable_contract` - The contract of the underlying token that can be wrapped
@@ -71,5 +71,40 @@ of tokens on every transaction.
   - `quantity` - `0.0000 <TOTEM>`
   - `payment` - `0.0000 A/EOS`
   - `memo` - (optional) Any memo
+
+</details>
+
+
+### Transfer Controls
+
+A transfer mod that allows the holder to set global or per-account daily transfer limits.
+
+<details>
+<summary>Click to see details</summary>
+
+**Limit:**
+- `mod::limit` - Set a global transfer limit or per-account limits.
+  - `account` - The account to set the limit for (use `""` for global limit)
+  - `ticker` - The totem ticker to set the limit for
+  - `global_daily_limit` - The global daily transfer limit (0 for no limit)
+  - `account_limits:AccountLimitParam[]` - A list of per-account daily limits
+
+```typescript
+type AccountLimitParam = {
+    recipient: name;
+    daily_limit: asset;
+}
+```
+
+**Unlimit:**
+- `mod::unlimit` - Remove per-account limits.
+  - `account` - The account to remove the limit for (use `""` for global limit)
+  - `ticker` - The totem ticker to remove the limit for
+  - `accounts:name[]` - A list of accounts to remove limits for
+
+> Note: To remove global limits, use `mod::limit` with `global_daily_limit` set to `0`.
+
+**Transfer:**
+- `totems::transfer` - Transfer totems as normal. The mod will enforce the limits set.
 
 </details>
