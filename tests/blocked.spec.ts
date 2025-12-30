@@ -16,6 +16,7 @@ import {
 import {TimePointSec} from "@wharfkit/antelope";
 
 const blocklist = blockchain.createContract('blocklist', 'build/blocklist',  true);
+const miner = blockchain.createContract('miner', 'build/miner',  true);
 
 describe('Mod', () => {
     it('should setup tests', async () => {
@@ -36,6 +37,16 @@ describe('Mod', () => {
                 MOD_HOOKS.Burn
             ],
             0,
+            MOCK_MOD_DETAILS(false),
+        )
+
+        await publishMod(
+            'seller',
+            'miner',
+            [
+                MOD_HOOKS.Mint,
+            ],
+            0,
             MOCK_MOD_DETAILS(true),
         )
 
@@ -45,10 +56,11 @@ describe('Mod', () => {
                 { recipient: 'user', quantity: 1_000_000_000, label: 'user', is_minter: false },
                 { recipient: 'user2', quantity: 1_000_000_000, label: 'user2', is_minter: false },
                 { recipient: 'user3', quantity: 1_000_000_000, label: 'user3', is_minter: false },
+                { recipient: 'miner', quantity: 1_000_000_000, label: 'miner', is_minter: true },
             ],
             totemMods({
                 transfer: ['blocklist'],
-                mint: ['blocklist'],
+                mint: ['blocklist', 'miner'],
                 burn: ['blocklist'],
             }),
         )
@@ -77,6 +89,19 @@ describe('Mod', () => {
 
         // other transfers should still work
         await totems.actions.transfer(['user3', 'user', '1.0000 BLOCK', 'memo']).send('user3');
+    });
+    it('should not be able to burn from a blocked account', async () => {
+        await expectToThrow(
+            totems.actions.burn(['user2', '1.0000 BLOCK', 'memo']).send('user2'),
+            "eosio_assert: blocked!"
+        );
+    });
+    it('should not be able to mint from a blocked account', async () => {
+        await miner.actions.configure(['BLOCK', 10_0000, 100_0000]).send('creator');
+        await expectToThrow(
+            totems.actions.mint(['miner', 'user2', '0.0000 BLOCK', '0.0000 A', '']).send('user2'),
+            "eosio_assert: blocked!"
+        );
     });
     it('should be able to unblock the account and send/receive again', async () => {
         await blocklist.actions.unblock(['BLOCK', 'user2']).send('creator');
