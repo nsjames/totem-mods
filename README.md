@@ -18,7 +18,7 @@ npm test
 
 ## Mods
 
-### Wrapper Mod
+### 🟢 Wrapper Mod
 
 Allows wrapping/unwrapping tokens to Totems from either standard `eosio.token` tokens, or other Totems.
 
@@ -50,7 +50,7 @@ Allows wrapping/unwrapping tokens to Totems from either standard `eosio.token` t
 </details>
 
 
-### Miner Mod
+### 🟢 Miner Mod
 
 A Minter Mod that allows accounts to "mine" tokens by submitting transactions to the chain that give them a fixed amount 
 of tokens on every transaction.
@@ -75,7 +75,7 @@ of tokens on every transaction.
 </details>
 
 
-### Transfer Controls
+### 🟢 Transfer Controls
 
 A transfer mod that allows the holder to set global or per-account daily transfer limits.
 
@@ -109,7 +109,7 @@ type AccountLimitParam = {
 
 </details>
 
-### Blocklist Mod
+### 🟢 Blocklist Mod
 
 A transfer/mint/burn mod that allows the totem creator to blocklist accounts from transferring, minting, or burning tokens.
 
