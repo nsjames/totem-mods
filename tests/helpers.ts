@@ -115,13 +115,14 @@ export const createTotem = async (
     symbol,
     allocations:Allocation[],
     mods = totemMods(),
-    authorizer = 'creator',
     details = MOCK_TOTEM_DETAILS(),
+    creator = 'creator',
+    authorizer = 'creator',
     referrer = undefined
 ) => {
     await transfer('tester', totems.name.toString(), '100.0000 A', 'fund totems account');
     return totems.actions.create([
-        'creator',
+        creator,
         symbol,
         allocations.map(alloc => ({
             label: alloc.label,
