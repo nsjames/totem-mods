@@ -124,9 +124,6 @@ CONTRACT wrapper : public contract {
         auto balances_itr = balances.find(pair_itr->id);
         check(balances_itr != balances.end(), "Balance not found for pairing");
 
-//         asset unregistered_balance = totems::get_balance(get_self(), totem_ticker);
-//         auto delta = unregistered_balance - balances_itr->balance_totem;
-
 		check(balances_itr->balance_wrappable.amount >= quantity.amount, "Insufficient wrapped totem balance for unwrapping: " + balances_itr->balance_wrappable.to_string() + " available, " + balances_itr->balance_totem.to_string() + " to unwrap");
 		balances.modify(balances_itr, get_self(), [&](auto& row) {
 			row.balance_wrappable -= asset{quantity.amount, wrappable_ticker};
