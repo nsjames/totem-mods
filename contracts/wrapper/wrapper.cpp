@@ -33,11 +33,10 @@ CONTRACT wrapper : public contract {
 
     [[eosio::action]]
     void setup(const symbol& totem_ticker, const symbol& wrappable_ticker, const name& wrappable_contract) {
+        require_auth(totems::get_totem_creator(totem_ticker.code()));
         check(totem_ticker != wrappable_ticker, "Tickers must be different");
         check(totem_ticker.precision() == wrappable_ticker.precision(), "Tickers must have the same precision");
         check(is_account(wrappable_contract), "Wrappable contract account does not exist");
-
-
 
 		pairings_table pairings(get_self(), get_self().value);
 		balances_table balances(get_self(), get_self().value);
@@ -66,6 +65,8 @@ CONTRACT wrapper : public contract {
     // quantity is totem ticker, memo is wrappable ticker
     [[eosio::action]]
     void mint(const name& mod, const name& minter, const asset& quantity, const asset& payment, const std::string& memo) {
+        check(payment.amount == 0, "Wrapper mod does not accept payment");
+
         symbol totem_ticker = quantity.symbol;
         std::pair<symbol, name> parsed = parse_memo(memo);
         symbol wrappable_ticker = parsed.first;

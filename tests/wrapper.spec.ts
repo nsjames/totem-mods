@@ -48,13 +48,10 @@ describe('Mod', () => {
         assert(balance === 1_000_000_000, `Expected balance to be 1_000_000_000, got ${balance}`);
 
         // need to set up mod
-        await wrapper.actions.setup(['4,WA', '4,A', 'core.vaulta']).send('wrapper');
-        // console.log(wrapper.tables.pairings(nameToBigInt('wrapper')).getTableRows())
-        // process.exit(0);
+        await wrapper.actions.setup(['4,WA', '4,A', 'core.vaulta']).send('creator');
     });
     it('should be able to wrap A tokens', async () => {
         await vaulta.actions.transfer(['user', 'wrapper', '1.0000 A', '']).send('user');
-        // void mint(const name& mod, const name& minter, const asset& quantity, const asset& payment, const string& memo);
         await totems.actions.mint(['wrapper', 'user', '0.0000 WA', '0.0000 A', '4,A,core.vaulta']).send('user');
 
         {
