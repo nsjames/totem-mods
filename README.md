@@ -153,3 +153,23 @@ tokens.
 - `totems::transfer` / `totems::mint` / `totems::burn` - The mod will enforce the blocklist on these actions.
 
 </details>
+
+### 🟢 Freezer Mod
+
+A transfer/mint/burn mod that allows the totem creator to freeze all transfers, mints, and burns of a totem.
+
+<details>
+<summary>Click to see details</summary>
+
+**Freeze:**
+- `mod::freeze` - Freeze all transfers/mints/burns of a totem.
+  - `ticker` - The totem ticker to freeze
+
+**Unfreeze:**
+- `mod::thaw` - Unfreeze all transfers/mints/burns of a totem.
+  - `ticker` - The totem ticker to unfreeze
+
+**Transfer/mint/burn:**
+- `totems::transfer` / `totems::mint` / `totems::burn` - The mod will enforce the freeze on these actions.
+
+</details>
