@@ -108,3 +108,25 @@ type AccountLimitParam = {
 - `totems::transfer` - Transfer totems as normal. The mod will enforce the limits set.
 
 </details>
+
+### Blocklist Mod
+
+A transfer/mint/burn mod that allows the totem creator to blocklist accounts from transferring, minting, or burning tokens.
+
+<details>
+<summary>Click to see details</summary>
+
+**Block:**
+- `mod::block` - Block an account from transferring/minting/burning tokens.
+  - `ticker` - The totem ticker to block the account for
+  - `account` - The account to block
+
+**Unblock:**
+- `mod::unblock` - Unblock an account.
+  - `ticker` - The totem ticker to unblock the account for
+  - `account` - The account to unblock
+
+**Transfer/mint/burn:**
+- `totems::transfer` / `totems::mint` / `totems::burn` - The mod will enforce the blocklist on these actions.
+
+</details>
