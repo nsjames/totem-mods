@@ -224,3 +224,72 @@ Allows a creator to set up **_mutable_** mods on a totem that can be changed by 
 - The mod will forward all hooked actions to the added mods for processing.
 
 </details>
+
+### 🟢 Extinguisher
+
+Removes burn functionality from a totem.
+
+<details>
+<summary>Click to see details</summary>
+
+**Burn:**
+- `totems::burn` - The mod will prevent any burns from occurring.
+
+</details>
+
+
+### 🟢 Whale Block
+
+A transfer/mint mod that blocks accounts from holding over a certain amount of tokens.
+
+<details>
+<summary>Click to see details</summary>
+
+**Toggle Member:**
+- `mod::configure` - Toggle an account's membership in the inner circle.
+  - `ticker` - The totem ticker to modify
+  - `max_holdings_percent` - The maximum percentage of total supply an account can hold (0-100, 0 for no limit)
+  - `max_totem_cap` - A hard cap on the maximum number of totems an account can hold (0 for no limit)
+
+> Note: You cannot have both limits set at the same time.
+
+**Transfer/mint:**
+- `totems::transfer` / `totems::mint` - The mod will enforce the whale block on these actions.
+
+</details>
+
+### 🟢 KYC
+
+A transfer/mint mod that blocks accounts that haven't gone through KYC from interacting with totems.
+
+> Note: KYC applies immediately to all accounts across all totems. 
+> If you add this mod to your totem holders that have previously KYCed will be able to use your 
+> totem right away.
+
+<details>
+<summary>Click to see details</summary>
+
+**Add Manager:**
+- `mod::addmanager` - Adds a manager that can manage KYC'ed accounts.
+  - `account` - The account to add as a manager
+
+> Only the contract can add managers.
+
+**Remove Manager:**
+- `mod::delmanager` - Removes a manager.
+  - `account` - The account to remove as a manager
+
+> Only the contract can remove managers.
+
+**Manage KYC:**
+- `mod::setkyc` - Sets the KYC status of an account.
+  - `manager` - The manager performing the action
+  - `account` - The account to set the KYC status for
+  - `has_kyc` - Whether the account has passed KYC
+
+> KYC can be revoked and re-granted at any time.
+
+**Transfer/mint:**
+- `totems::transfer` / `totems::mint` - The mod will enforce KYC on these actions.
+
+</details>
