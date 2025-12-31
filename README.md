@@ -18,7 +18,7 @@ npm test
 
 ## Mods
 
-### 🟢 Wrapper Mod
+### 🟢 Wrapper
 
 Allows wrapping/unwrapping tokens to Totems from either standard `eosio.token` tokens, or other Totems.
 
@@ -50,7 +50,7 @@ Allows wrapping/unwrapping tokens to Totems from either standard `eosio.token` t
 </details>
 
 
-### 🟢 Miner Mod
+### 🟢 Miner
 
 A Minter Mod that allows accounts to "mine" tokens by submitting transactions to the chain that give them a fixed amount 
 of tokens on every transaction.
@@ -109,7 +109,7 @@ type AccountLimitParam = {
 
 </details>
 
-### 🟢 Blocklist Mod
+### 🟢 Blocklist
 
 A transfer/mint/burn mod that allows the totem creator to blocklist accounts from transferring, minting, or burning tokens.
 
@@ -131,7 +131,7 @@ A transfer/mint/burn mod that allows the totem creator to blocklist accounts fro
 
 </details>
 
-### 🟢 ScamDefender Mod
+### 🟢 ScamDefender
 
 A transfer/mint/burn mod that allows a central authority to blocklist accounts from transferring, minting, or burning 
 tokens.
@@ -154,7 +154,7 @@ tokens.
 
 </details>
 
-### 🟢 Freezer Mod
+### 🟢 Freezer
 
 A transfer/mint/burn mod that allows the totem creator to freeze all transfers, mints, and burns of a totem.
 
@@ -171,5 +171,26 @@ A transfer/mint/burn mod that allows the totem creator to freeze all transfers, 
 
 **Transfer/mint/burn:**
 - `totems::transfer` / `totems::mint` / `totems::burn` - The mod will enforce the freeze on these actions.
+
+</details>
+
+### 🟢 Inner Circle
+
+A transfer/mint/burn mod that disallows everyone except a specific list of accounts from transferring, minting, or burning tokens.
+
+Creator is always a member.
+Only creator can remove members, but members can add other members.
+
+<details>
+<summary>Click to see details</summary>
+
+**Toggle Member:**
+- `mod::togglemember` - Toggle an account's membership in the inner circle.
+  - `ticker` - The totem ticker to modify
+  - `sponsor` - The account performing the action (must be a member)
+  - `account` - The account to toggle membership for
+
+**Transfer/mint/burn:**
+- `totems::transfer` / `totems::mint` / `totems::burn` - The mod will enforce the inner circle on these actions.
 
 </details>
