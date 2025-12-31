@@ -293,3 +293,60 @@ A transfer/mint mod that blocks accounts that haven't gone through KYC from inte
 - `totems::transfer` / `totems::mint` - The mod will enforce KYC on these actions.
 
 </details>
+
+### 🟢 Approvals
+
+A transfer mod that works like ERC20's `approve`/`transferFrom`, allowing accounts to approve other accounts to transfer tokens on their behalf.
+
+> Note: This works like an escrow, since mods cannot bypass the require_auth of the `totems::transfer`.
+
+<details>
+<summary>Click to see details</summary>
+
+**Open Balance:**
+- `mod::open` - Open a balance for an account to hold tokens.
+  - `owner` - The account opening the balance
+  - `ticker:symbol` - The totem ticker to open the balance for
+
+**Deposit:**
+- `totems::transfer` - Transfer tokens to the mod account.
+  - `from` - The account sending the tokens
+  - `to` - This mod contract
+  - `quantity` - The amount of totem tokens to transfer
+  - `memo` - (optional) Any memo
+
+**Withdraw:**
+- `mod::withdraw` - Withdraw tokens from the mod account to your own account.
+  - `owner` - The account withdrawing the tokens
+  - `quantity` - The amount of totem tokens to withdraw
+  - `memo` - (optional) Any memo
+
+**Approve:**
+- `mod::approve` - Approve an account to transfer tokens on your behalf.
+  - `owner` - The account approving the transfer
+  - `spender` - The account being approved to transfer tokens
+  - `quantity` - The amount of tokens to approve
+
+
+**Spend:**
+- `mod::spend` - Transfer tokens on behalf of another account.
+  - `owner` - The owner of the totems
+  - `spender` - The account spending the totems
+  - `recipient` - The account receiving the totems
+  - `quantity` - The amount of totem tokens to transfer
+  - `memo` - (optional) Any memo
+
+**Read-only Actions:**
+
+```cpp
+// Get the allowance an owner has given a spender
+asset getallowance(const name& owner, const name& spender, const symbol& ticker)
+
+// Check if an account has an open balance
+bool isopen(const name& owner, const symbol& ticker)
+
+// Get the escrow balance of an account
+asset getbalance(const name& owner, const symbol& ticker)
+```
+
+</details>
