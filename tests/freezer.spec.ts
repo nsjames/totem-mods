@@ -1,19 +1,20 @@
 import { describe, it } from "node:test";
 import assert from "node:assert";
-import {expectToThrow, nameToBigInt} from "@vaulta/vert";
+import {expectToThrow, nameToBigInt, symbolCodeToBigInt} from "@vaulta/vert";
 import {
     ACCOUNTS,
     blockchain,
     createAccount,
     createTotem,
-    getTotemBalance,
+    getTotemBalance, market,
     MOCK_MOD_DETAILS,
     MOD_HOOKS,
     publishMod,
     setup,
     totemMods, totems, vaulta
 } from "./helpers";
-import {TimePointSec} from "@wharfkit/antelope";
+import {Asset, TimePointSec} from "@wharfkit/antelope";
+import SymbolCode = Asset.SymbolCode;
 
 const freezer = blockchain.createContract('freezer', 'build/freezer',  true);
 const miner = blockchain.createContract('miner', 'build/miner',  true);

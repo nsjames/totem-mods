@@ -107,6 +107,7 @@ CONTRACT controls : public contract {
 
 	[[eosio::on_notify(TOTEMS_TRANSFER_NOTIFY)]]
 	void on_transfer(const name& from, const name& to, const asset& quantity, const string& memo){
+		totems::check_license(quantity.symbol.code(), get_self());
 		if(from == get_self() || to == get_self()){
 			return;
 		}

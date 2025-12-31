@@ -41,6 +41,7 @@ CONTRACT freezer : public contract {
 
 	[[eosio::on_notify(TOTEMS_TRANSFER_NOTIFY)]]
 	void on_transfer(const name& from, const name& to, const asset& quantity, const string& memo){
+		totems::check_license(quantity.symbol.code(), get_self());
 		if(from == get_self() || to == get_self()){
 			return;
 		}
@@ -52,6 +53,7 @@ CONTRACT freezer : public contract {
 
 	[[eosio::on_notify(TOTEMS_MINT_NOTIFY)]]
 	void on_mint(const name& mod, const name& minter, const asset& quantity, const asset& payment, const std::string& memo){
+		totems::check_license(quantity.symbol.code(), get_self());
 		frozen_table frozen(get_self(), get_self().value);
 		auto it = frozen.find(quantity.symbol.code().raw());
 		check(it == frozen.end(), "frozen!");
@@ -59,6 +61,7 @@ CONTRACT freezer : public contract {
 
 	[[eosio::on_notify(TOTEMS_BURN_NOTIFY)]]
 	void on_burn(const name& owner, const asset& quantity, const string& memo){
+		totems::check_license(quantity.symbol.code(), get_self());
 		frozen_table frozen(get_self(), get_self().value);
 		auto it = frozen.find(quantity.symbol.code().raw());
 		check(it == frozen.end(), "frozen!");

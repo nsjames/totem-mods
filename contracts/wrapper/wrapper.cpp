@@ -1,6 +1,7 @@
 #include <eosio/asset.hpp>
 #include <eosio/eosio.hpp>
 #include <eosio/crypto.hpp>
+#include <eosio/transaction.hpp>
 
 #include "../library/totems.hpp"
 using namespace eosio;
@@ -65,6 +66,8 @@ CONTRACT wrapper : public contract {
     // quantity is totem ticker, memo is wrappable ticker
     [[eosio::action]]
     void mint(const name& mod, const name& minter, const asset& quantity, const asset& payment, const std::string& memo) {
+        check(get_sender() == totems::TOTEMS_CONTRACT, "mint action can only be called by totems contract");
+        totems::check_license(quantity.symbol.code(), get_self());
         check(payment.amount == 0, "Wrapper mod does not accept payment");
 
         symbol totem_ticker = quantity.symbol;
@@ -106,6 +109,7 @@ CONTRACT wrapper : public contract {
 	// transfer to this contract swap back to wrappable
     [[eosio::on_notify(TOTEMS_TRANSFER_NOTIFY)]]
     void on_incoming(const name& from, const name& to, const asset& quantity, const std::string& memo) {
+        totems::check_license(quantity.symbol.code(), get_self());
         if (to != get_self() || from == get_self()) {
             return;
         }

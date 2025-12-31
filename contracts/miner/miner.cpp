@@ -1,6 +1,7 @@
 #include <eosio/asset.hpp>
 #include <eosio/eosio.hpp>
 #include <eosio/system.hpp>
+#include <eosio/transaction.hpp>
 
 #include "../library/totems.hpp"
 using namespace eosio;
@@ -45,6 +46,8 @@ CONTRACT miner : public contract {
 
 	[[eosio::action]]
 	void mint(const name& mod, const name& minter, const asset& quantity, const asset& payment, const std::string& memo) {
+		check(get_sender() == totems::TOTEMS_CONTRACT, "mint action can only be called by totems contract");
+		totems::check_license(quantity.symbol.code(), get_self());
 		check(payment.amount == 0, "Miner mod does not accept payment");
 
 		auto totem = totems::get_totem(quantity.symbol.code());

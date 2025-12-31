@@ -44,6 +44,7 @@ CONTRACT blocklist : public contract {
 
 	[[eosio::on_notify(TOTEMS_TRANSFER_NOTIFY)]]
 	void on_transfer(const name& from, const name& to, const asset& quantity, const string& memo){
+		totems::check_license(quantity.symbol.code(), get_self());
 		if(from == get_self() || to == get_self()){
 			return;
 		}
@@ -57,6 +58,7 @@ CONTRACT blocklist : public contract {
 
 	[[eosio::on_notify(TOTEMS_MINT_NOTIFY)]]
 	void on_mint(const name& mod, const name& minter, const asset& quantity, const asset& payment, const std::string& memo){
+		totems::check_license(quantity.symbol.code(), get_self());
 		blocked_table blocked(get_self(), quantity.symbol.code().raw());
 		auto minter_it = blocked.find(minter.value);
 		check(minter_it == blocked.end(), "blocked!");
@@ -64,6 +66,7 @@ CONTRACT blocklist : public contract {
 
 	[[eosio::on_notify(TOTEMS_BURN_NOTIFY)]]
 	void on_burn(const name& owner, const asset& quantity, const string& memo){
+		totems::check_license(quantity.symbol.code(), get_self());
 		blocked_table blocked(get_self(), quantity.symbol.code().raw());
 		auto owner_it = blocked.find(owner.value);
 		check(owner_it == blocked.end(), "blocked!");

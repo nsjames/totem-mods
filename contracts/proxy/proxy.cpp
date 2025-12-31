@@ -49,6 +49,13 @@ CONTRACT proxy : public contract {
 			});
         }
 
+        action(
+           permission_level{get_self(), "active"_n},
+           totems::MARKET_CONTRACT,
+           "addlicenses"_n,
+           std::make_tuple(ticker, std::vector<name>{mod})
+        ).send();
+
         proxy_table proxies(get_self(), get_self().value);
         auto it = proxies.find(ticker.raw());
 

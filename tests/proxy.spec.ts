@@ -15,7 +15,7 @@ import {
 } from "./helpers";
 import {TimePointSec} from "@wharfkit/antelope";
 
-const proxy = blockchain.createContract('proxy', 'build/proxy',  true);
+const proxy = blockchain.createContract('totemodproxy', 'build/proxy',  true);
 const freezer = blockchain.createContract('freezer', 'build/freezer',  true);
 const miner = blockchain.createContract('miner', 'build/miner',  true);
 
@@ -41,7 +41,7 @@ describe('Mod', () => {
         )
         await publishMod(
             'seller',
-            'proxy',
+            'totemodproxy',
             [
                 MOD_HOOKS.Transfer,
                 MOD_HOOKS.Mint,
@@ -67,9 +67,9 @@ describe('Mod', () => {
                 { recipient: 'miner', quantity: 1_000_000_000, label: 'miner', is_minter: true },
             ],
             totemMods({
-                transfer: ['proxy'],
-                mint: ['proxy', 'miner'],
-                burn: ['proxy'],
+                transfer: ['totemodproxy'],
+                mint: ['totemodproxy', 'miner'],
+                burn: ['totemodproxy'],
             }),
         )
     });
@@ -91,7 +91,7 @@ describe('Mod', () => {
             proxy.actions.add(['PROXY', ['transfer'], 'freezer']).send('creator'),
             "eosio_assert: No balance found for fee payment"
         );
-        await eos.actions.transfer(['tester', 'proxy', '1.0000 EOS', 'fund proxy for fee']).send('tester');
+        await eos.actions.transfer(['tester', 'totemodproxy', '1.0000 EOS', 'fund proxy for fee']).send('tester');
         await proxy.actions.add(['PROXY', ['transfer'], 'freezer']).send('creator');
     });
     it('should be able to freeze the totem and disallow transfers', async () => {
