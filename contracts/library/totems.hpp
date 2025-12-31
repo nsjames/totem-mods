@@ -283,8 +283,18 @@ namespace totems {
     typedef eosio::multi_index<"licenses"_n, License> license_table;
 
 	void check_license(const symbol_code& ticker, const name& mod){
-	    license_table licenses(MARKET_CONTRACT, ticker.raw());
-	    check(licenses.find(mod.value) != licenses.end(), "Mod is not licensed for this totem: " + mod.to_string());
+		{
+			license_table licenses(TOTEMS_CONTRACT, ticker.raw());
+			if(licenses.find(mod.value) != licenses.end()) return;
+		}
+		{
+			if(is_account(PROXY_MOD_CONTRACT)){
+				license_table licenses(PROXY_MOD_CONTRACT, ticker.raw());
+				if(licenses.find(mod.value) != licenses.end()) return;
+			}
+		}
+
+		check(false, "Mod is not licensed for this totem: " + mod.to_string());
 	}
 
 	/***

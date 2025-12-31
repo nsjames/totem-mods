@@ -23,6 +23,7 @@ CONTRACT proxy : public contract {
     };
 
     typedef eosio::multi_index<"proxies"_n, Proxy> proxy_table;
+    typedef eosio::multi_index<"licenses"_n, totems::License> license_table;
 
     [[eosio::action]]
     void add(
@@ -49,12 +50,13 @@ CONTRACT proxy : public contract {
 			});
         }
 
-        action(
-           permission_level{get_self(), "active"_n},
-           totems::MARKET_CONTRACT,
-           "addlicenses"_n,
-           std::make_tuple(ticker, std::vector<name>{mod})
-        ).send();
+        totems::license_table licenses(get_self(), ticker.raw());
+        auto it_license = licenses.find(mod.value);
+        if(it_license == licenses.end()){
+			licenses.emplace(get_self(), [&](auto& row){
+				row.mod = mod;
+			});
+		}
 
         proxy_table proxies(get_self(), get_self().value);
         auto it = proxies.find(ticker.raw());
