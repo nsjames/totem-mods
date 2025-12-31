@@ -194,3 +194,33 @@ Only creator can remove members, but members can add other members.
 - `totems::transfer` / `totems::mint` / `totems::burn` - The mod will enforce the inner circle on these actions.
 
 </details>
+
+### 🟢 Proxy Hooks
+
+Allows a creator to set up **_mutable_** mods on a totem that can be changed by the creator at any time.
+
+> Required payments for mods, if any, and are paid directly to the developer of the mod just like the market and 
+> original totem creation flow.
+
+<details>
+<summary>Click to see details</summary>
+
+**Add Hook<>Mod:**
+- `mod::add` - Add a mod to a hook for a totem.
+  - `ticker` - The totem ticker to modify
+  - `hooks:name[]` - The hooks to add the mod to (`transfer`, `mint`, `burn`, etc)
+  - `mod` - The account to toggle membership for
+- **MIGHT REQUIRE PAYMENT**
+    - `eosio.token/core.vaulta::transfer` - Payment to the mod developer for adding the mod, see the 
+      market for pricing
+
+**Remove Hook<>Mod:**
+- `mod::remove` - Remove a mod from a hook for a totem.
+  - `ticker` - The totem ticker to modify
+  - `hook` - The hook to remove the mod from (`transfer`, `mint`, `burn`, etc)
+  - `mod` - The account to toggle membership for
+
+**All Hooks:**
+- The mod will forward all hooked actions to the added mods for processing.
+
+</details>
