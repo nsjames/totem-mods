@@ -1,6 +1,14 @@
 # Totem Mods!
 
-I'm building out a bunch of totem mods to serve as a useful base for creators.
+[Totems](https://totems.fun) are a new blockchain token standard that supports modular functionality via "Mods".
+Mods are event-driven programs that respond to token events such as transfers, mints, and burns.
+Totem creators can mix-match mods to create unique token behaviors through an easy UI instead of complex smart contract coding.
+There is a market for mods that allows mod developers to get paid every time a mod is stacked into a totem.
+
+This is all early software, and if it interests you feel free to join [our telegram](https://t.me/totemize)
+to discuss, influence the direction, or ask questions. Also here is the [core code.](https://github.com/nsjames/totems)
+
+Below is a list of the mods that I have built out as examples and useful base functionality.
 
 ## Building
 
