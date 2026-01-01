@@ -398,7 +398,7 @@ a single-use.
 
 **Intent Structure:**
 ```cpp
-struct [[eosio::table]] Intent {
+struct Intent {
     uint64_t        id;
     name            owner;
     name            consumer;     // API / mod / service
