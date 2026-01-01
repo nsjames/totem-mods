@@ -18,7 +18,7 @@ import {TimePointSec} from "@wharfkit/antelope";
 const scamdefender = blockchain.createContract('scamdefender', 'build/scamdefender',  true);
 const miner = blockchain.createContract('miner', 'build/miner',  true);
 
-describe('Mod', () => {
+describe('Scam Defender', () => {
     it('should setup tests', async () => {
         await setup();
         await createAccount('seller')

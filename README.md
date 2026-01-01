@@ -315,11 +315,14 @@ A transfer mod that works like ERC20's `approve`/`transferFrom`, allowing accoun
   - `quantity` - The amount of totem tokens to transfer
   - `memo` - (optional) Any memo
 
-**Withdraw:**
-- `mod::withdraw` - Withdraw tokens from the mod account to your own account.
-  - `owner` - The account withdrawing the tokens
-  - `quantity` - The amount of totem tokens to withdraw
+**Transfer:**
+- `mod::transfer` - Transfer tokens from the owner's escrow balance to a recipient.
+  - `from` - The account sending the tokens
+  - `to` - The account receiving the tokens
+  - `quantity` - The amount of totem tokens to transfer
   - `memo` - (optional) Any memo
+
+> Note: Can send to self to withdraw from escrow.
 
 **Approve:**
 - `mod::approve` - Approve an account to transfer tokens on your behalf.
@@ -347,6 +350,102 @@ bool isopen(const name& owner, const symbol& ticker)
 
 // Get the escrow balance of an account
 asset getbalance(const name& owner, const symbol& ticker)
+```
+
+</details>
+
+### 🟢 x402
+
+A transfer mod that works like x402, allowing accounts to approve other accounts to transfer tokens on their behalf for 
+a single-use.
+
+> Note: This works like an escrow, since mods cannot bypass the require_auth of the `totems::transfer`.
+
+<details>
+<summary>Click to see details</summary>
+
+**Open Balance:**
+- `mod::open` - Open a balance for an account to hold tokens.
+  - `owner` - The account opening the balance
+  - `ticker:symbol` - The totem ticker to open the balance for
+
+**Deposit:**
+- `totems::transfer` - Transfer tokens to the mod account.
+  - `from` - The account sending the tokens
+  - `to` - This mod contract
+  - `quantity` - The amount of totem tokens to transfer
+  - `memo` - (optional) Any memo
+
+**Transfer:**
+- `mod::transfer` - Transfer tokens from the owner's escrow balance to a recipient.
+  - `from` - The account sending the tokens
+  - `to` - The account receiving the tokens
+  - `quantity` - The amount of totem tokens to transfer
+  - `memo` - (optional) Any memo
+
+> Note: Can send to self to withdraw from escrow.
+
+**Authorize:**
+- `mod::authorize` - Authorize an account to transfer totems on your behalf for a single-use.
+  - `owner` - The account approving the transfer
+  - `spender` - The account being approved to transfer totems
+  - `quantity` - The amount of totems to approve
+  - `request_hash` - A hash of the request data (to prevent replay attacks)
+  - `expires_sec` - How many seconds until this authorization expires
+  - RETURNS: `Intent`
+
+> Note: This locks up the totems in escrow until the intent is either consumed or revoked.
+
+**Intent Structure:**
+```cpp
+struct [[eosio::table]] Intent {
+    uint64_t        id;
+    name            owner;
+    name            consumer;     // API / mod / service
+    asset           price;
+    checksum256     request_hash; // binds to API request
+    time_point_sec  expires;
+};
+```
+
+**Revoke:**
+- `mod::revoke` - Revoke a previously created intent (owner only).
+  - `id` - The ID of the intent to revoke
+
+> Note: This unlocks the totems in escrow.
+
+**Consume:**
+- `mod::consume` - Consume an authorization to transfer totems on behalf of another account.
+  - `id` - The ID of the intent to consume
+  - `request_hash` - The hash of the request data (must match the original)
+  - RETURNS: `bool` indicating success
+    - If false this intent is expired, and it removes the intent and unlocks the totems
+
+**Read-only Actions:**
+
+```cpp
+// Get the allowance an owner has given a spender
+asset getallowance(const name& owner, const name& spender, const symbol& ticker)
+
+// Check if an account has an open balance
+bool isopen(const name& owner, const symbol& ticker)
+
+// Get the escrow balance of an account
+asset getbalance(const name& owner, const symbol& ticker)
+
+// Get the locked balance of an account
+asset getlockedbal(const name& owner, const symbol& ticker)
+
+// Get an intent by ID
+std::optional<Intent> getintent(const uint64_t& id)
+
+struct MyIntentsResult {
+    std::vector<Intent> intents;
+    std::optional<uint128_t> cursor;
+};
+
+// Get all intents for an owner with pagination
+MyIntentsResult getmyintents(const name& owner, const uint32_t& limit, const std::optional<uint128_t>& cursor)
 ```
 
 </details>

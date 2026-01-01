@@ -17,7 +17,7 @@ import {TimePointSec} from "@wharfkit/antelope";
 
 const controls = blockchain.createContract('controls', 'build/controls',  true);
 
-describe('Mod', () => {
+describe('Transfer Controls', () => {
     it('should setup tests', async () => {
         await setup();
         await createAccount('seller')

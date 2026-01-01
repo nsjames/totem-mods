@@ -18,7 +18,7 @@ import {TimePointSec} from "@wharfkit/antelope";
 const whaleblock = blockchain.createContract('whaleblock', 'build/whaleblock',  true);
 const miner = blockchain.createContract('miner', 'build/miner',  true);
 
-describe('Mod', () => {
+describe('Whale Block', () => {
     it('should setup tests', async () => {
         await setup();
         await createAccount('seller')

@@ -18,7 +18,7 @@ import {TimePointSec} from "@wharfkit/antelope";
 const kyc = blockchain.createContract('kyc', 'build/kyc',  true);
 const miner = blockchain.createContract('miner', 'build/miner',  true);
 
-describe('Mod', () => {
+describe('KYC', () => {
     it('should setup tests', async () => {
         await setup();
         await createAccount('seller')

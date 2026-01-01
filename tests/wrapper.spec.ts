@@ -16,7 +16,7 @@ import {
 
 const wrapper = blockchain.createContract('wrapper', 'build/wrapper',  true);
 
-describe('Mod', () => {
+describe('Wrapper', () => {
     it('should setup tests', async () => {
         await setup();
         await createAccount('seller')

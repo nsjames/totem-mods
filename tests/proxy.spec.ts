@@ -19,7 +19,7 @@ const proxy = blockchain.createContract('totemodproxy', 'build/proxy',  true);
 const freezer = blockchain.createContract('freezer', 'build/freezer',  true);
 const miner = blockchain.createContract('miner', 'build/miner',  true);
 
-describe('Mod', () => {
+describe('Proxy', () => {
     it('should setup tests', async () => {
         await setup();
         await createAccount('seller')

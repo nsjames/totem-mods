@@ -17,7 +17,7 @@ import {TimePointSec} from "@wharfkit/antelope";
 
 const extinguisher = blockchain.createContract('extinguisher', 'build/extinguisher',  true);
 
-describe('Mod', () => {
+describe('Extinguisher', () => {
     it('should setup tests', async () => {
         await setup();
         await createAccount('seller')

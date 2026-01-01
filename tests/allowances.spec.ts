@@ -30,13 +30,14 @@ const getEscrowBalance = async (account: string) => {
     ).split(' ')[0])
 }
 
-describe('Mod', () => {
+describe('Allowances', () => {
     it('should setup tests', async () => {
         await setup();
         await createAccount('seller')
         await createAccount('creator')
         await createAccount('user')
         await createAccount('user2')
+        await createAccount('user3')
     })
     it('should be able to publish a mod, and create a totem', async () => {
         await publishMod(
@@ -119,13 +120,23 @@ describe('Mod', () => {
             "eosio_assert: No allowance found for this spender."
         );
     });
-    it('should be able to withdraw remaining escrow balance', async () => {
+    it('should be able to transfer escrow balance', async () => {
         const balance = await getEscrowBalance('user');
         assert(balance === 300, `Expected escrow balance to be 300, got ${balance}`);
 
         const balanceBefore = getTotemBalance('user', 'ALLOW');
-        await allowances.actions.withdraw(['user', '300.0000 ALLOW', 'memo']).send('user');
+        await allowances.actions.transfer(['user', 'user', '200.0000 ALLOW', 'memo']).send('user');
         const balanceAfter = getTotemBalance('user', 'ALLOW');
-        assert(balanceAfter - balanceBefore === 300, 'Expected user to have received 300 ALLOW back');
+        assert(balanceAfter - balanceBefore === 200, 'Expected user to have received 300 ALLOW back');
+
+        // can also transfer not to self (non-withdraw)
+        await allowances.actions.transfer(['user', 'user3', '100.0000 ALLOW', 'memo']).send('user');
+        assert(getTotemBalance('user3', 'ALLOW') === 100, 'Expected user3 to have received 100 ALLOW');
+
+        // can no longer transfer, no balance
+        await expectToThrow(
+            allowances.actions.transfer(['user', 'user', '100.0000 ALLOW', 'memo']).send('user'),
+            "eosio_assert: Insufficient balance."
+        );
     });
 });

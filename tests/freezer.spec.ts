@@ -19,7 +19,7 @@ import SymbolCode = Asset.SymbolCode;
 const freezer = blockchain.createContract('freezer', 'build/freezer',  true);
 const miner = blockchain.createContract('miner', 'build/miner',  true);
 
-describe('Mod', () => {
+describe('Freezer', () => {
     it('should setup tests', async () => {
         await setup();
         await createAccount('seller')
