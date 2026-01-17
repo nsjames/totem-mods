@@ -1,8 +1,6 @@
 .idea
-node_modules
-dist
-build
-.env
-.vscode
 .DS_Store
-prebuilts/*
+.vscode
+# Node modules
+/node_modules
+*/node_modules

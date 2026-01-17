@@ -1,0 +1,22 @@
+{
+  "name": "evm",
+  "version": "1.0.0",
+  "type": "module",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-ignition": "^3.0.6",
+    "@nomicfoundation/hardhat-toolbox-viem": "^5.0.1",
+    "@types/node": "^22.19.7",
+    "forge-std": "github:foundry-rs/forge-std#v1.9.4",
+    "hardhat": "^3.1.4",
+    "typescript": "~5.8.0",
+    "viem": "^2.44.4"
+  },
+  "dependencies": {
+    "@totems/evm": "^1.0.9"
+  },
+  "scripts": {
+    "build": "npx hardhat build",
+    "test": "hardhat test",
+    "coverage": "npx hardhat test --coverage"
+  }
+}
