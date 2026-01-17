@@ -5,6 +5,7 @@
   "devDependencies": {
     "@nomicfoundation/hardhat-ignition": "^3.0.6",
     "@nomicfoundation/hardhat-toolbox-viem": "^5.0.1",
+    "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.19.7",
     "forge-std": "github:foundry-rs/forge-std#v1.9.4",
     "hardhat": "^3.1.4",
@@ -12,11 +13,17 @@
     "viem": "^2.44.4"
   },
   "dependencies": {
-    "@totems/evm": "^1.0.9"
+    "@totems/evm": "^1.0.11",
+    "dotenv": "^16.4.5",
+    "js-yaml": "^4.1.0"
   },
   "scripts": {
     "build": "npx hardhat build",
+    "build:production": "npx hardhat build --build-profile production",
     "test": "hardhat test",
-    "coverage": "npx hardhat test --coverage"
+    "coverage": "npx hardhat test --coverage",
+    "sync": "npx tsx scripts/sync-addresses.ts",
+    "publish:base-sepolia": "npm run sync && npm run build:production && npx tsx scripts/publish.ts base-sepolia --all --verify",
+    "publish:base": "npm run sync && npm run build:production && npx tsx scripts/publish.ts base --all --verify"
   }
 }

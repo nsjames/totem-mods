@@ -7,6 +7,7 @@ interface IERC20 {
     function transfer(address to, uint256 amount) external returns (bool);
     function transferFrom(address from, address to, uint256 amount) external returns (bool);
     function balanceOf(address account) external view returns (uint256);
+    function decimals() external view returns (uint8);
 }
 
 contract Wrapper is TotemMod, IModCreated, IModTransfer {
@@ -22,9 +23,27 @@ contract Wrapper is TotemMod, IModCreated, IModTransfer {
         return acceptedToken[ticker] != address(0);
     }
 
-    function setAcceptedToken(string calldata ticker, address token) external onlyCreator(ticker) {
-        require(acceptedToken[ticker] == address(0), "Token already set");
-        require(token != address(0), "Invalid token address");
+    function canSetAcceptedToken(
+        string calldata ticker,
+        address token
+    ) public view returns (bool valid, string memory reason) {
+        if (token == address(0)) {
+            return (false, "Invalid token address");
+        }
+        if (acceptedToken[ticker] != address(0)) {
+            return (false, "Token already set");
+        }
+        uint8 totemDecimals = TotemsLibrary.getTotem(totemsContract, ticker).details.decimals;
+        uint8 tokenDecimals = IERC20(token).decimals();
+        if (totemDecimals != tokenDecimals) {
+            return (false, "Token decimals must match totem decimals");
+        }
+        return (true, "");
+    }
+
+    function setAcceptedToken(string calldata ticker, address token) external onlyCreator(ticker) onlyLicensed(ticker) {
+        (bool valid, string memory reason) = canSetAcceptedToken(ticker, token);
+        require(valid, reason);
         acceptedToken[ticker] = token;
     }
 

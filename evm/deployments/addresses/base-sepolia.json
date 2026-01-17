@@ -1,0 +1,13 @@
+{
+  "Miner": "0xb7b82b6bbf7cefda17be22d55abc6f17ea2133a7",
+  "Wrapper": "0xd2c743721b56a34e145913760e42ddfd991859c4",
+  "Freezer": "0xe57fed722adbfc9e3567db568b935cb3d6689a21",
+  "Blocklist": "0xc8fb5c2713e33d3092a6a15385f623d73b77107a",
+  "KYC": "0xcf8dc0203a896df96802b86b2f1d052c23fc0494",
+  "Extinguisher": "0xc632c33f25ab1af102b1ae23816bf390855b37b1",
+  "ScamDefender": "0xc5c590d9c2c42799d6a8edf5b1c16252728078e3",
+  "TransferControls": "0x682f67449da2a50e3cbf196243eec14dfa967213",
+  "Allowlist": "0x245bc2f533f1ed9c9ce8305ab05dd00467aace5e",
+  "WhaleBlock": "0x46a1a23e2d972dd8951b83b1a5a76b32159d7a7b",
+  "InnerCircle": "0x4b0da14ac44a373ddebe371972b1150f65335926"
+}

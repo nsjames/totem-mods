@@ -12,10 +12,25 @@ contract WhaleBlock is TotemMod, IModTransfer {
         TotemMod(_totemsContract, _seller){}
 
     function isSetupFor(string calldata ticker) external override view returns (bool) {
-        return true;
+        return maxTokenPercentage[ticker] > 0;
     }
 
-    function configure(string calldata ticker, uint8 _maxTokenPercentage) external onlyCreator(ticker) {
+    function canConfigure(
+        string calldata ticker,
+        uint8 _maxTokenPercentage
+    ) public pure returns (bool valid, string memory reason) {
+        if (_maxTokenPercentage == 0) {
+            return (false, "maxTokenPercentage must be greater than zero");
+        }
+        if (_maxTokenPercentage > 100) {
+            return (false, "maxTokenPercentage must be 100 or less");
+        }
+        return (true, "");
+    }
+
+    function configure(string calldata ticker, uint8 _maxTokenPercentage) external onlyCreator(ticker) onlyLicensed(ticker) {
+        (bool valid, string memory reason) = canConfigure(ticker, _maxTokenPercentage);
+        require(valid, reason);
         maxTokenPercentage[ticker] = _maxTokenPercentage;
     }
 

@@ -68,9 +68,58 @@ describe("WhaleBlock", async () => {
     });
   });
 
-  it("should always report as setup for any ticker", async () => {
-    const isSetup = await whaleBlockMod.read.isSetupFor(["WHALE"]);
-    assert.equal(isSetup, true);
+  it("should report as setup only when configured", async () => {
+    // WHALE was configured earlier in the test
+    const isSetupWhale = await whaleBlockMod.read.isSetupFor(["WHALE"]);
+    assert.equal(isSetupWhale, true);
+
+    // NOTSETUP was never configured
+    const isSetupOther = await whaleBlockMod.read.isSetupFor(["NOTSETUP"]);
+    assert.equal(isSetupOther, false);
+  });
+
+  it("should validate configuration with canConfigure", async () => {
+    // Valid configuration
+    let [valid, reason] = await whaleBlockMod.read.canConfigure(["TEST", 50]);
+    assert.equal(valid, true);
+    assert.equal(reason, "");
+
+    // Invalid: 0%
+    [valid, reason] = await whaleBlockMod.read.canConfigure(["TEST", 0]);
+    assert.equal(valid, false);
+    assert.equal(reason, "maxTokenPercentage must be greater than zero");
+
+    // Invalid: > 100%
+    [valid, reason] = await whaleBlockMod.read.canConfigure(["TEST", 101]);
+    assert.equal(valid, false);
+    assert.equal(reason, "maxTokenPercentage must be 100 or less");
+
+    // Valid edge cases
+    [valid, reason] = await whaleBlockMod.read.canConfigure(["TEST", 1]);
+    assert.equal(valid, true);
+
+    [valid, reason] = await whaleBlockMod.read.canConfigure(["TEST", 100]);
+    assert.equal(valid, true);
+  });
+
+  it("should reject invalid configuration", async () => {
+    await createTotem(
+      totems,
+      market,
+      creator,
+      "WVALID",
+      18,
+      [{ recipient: holder, amount: 1000n * 10n ** 18n }],
+      { transfer: [whaleBlockMod.address] }
+    );
+
+    await assert.rejects(async () => {
+      await whaleBlockMod.write.configure(["WVALID", 0], { account: creator });
+    }, /maxTokenPercentage must be greater than zero/);
+
+    await assert.rejects(async () => {
+      await whaleBlockMod.write.configure(["WVALID", 101], { account: creator });
+    }, /maxTokenPercentage must be 100 or less/);
   });
 
   it("should exclude minter mods from whale block rules", async () => {

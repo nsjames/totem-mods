@@ -19,7 +19,7 @@ describe("Wrapper", async () => {
     creator
   ]);
 
-  const mockToken = await viem.deployContract("MockERC20", []);
+  const mockToken = await viem.deployContract("MockERC20", [18]);
 
   await publishMod(market, creator, wrapperMod.address, [Hook.Created, Hook.Transfer]);
 
@@ -51,6 +51,18 @@ describe("Wrapper", async () => {
     assert.equal(wrappedBalance, 10000n * 10n ** 18n);
   });
 
+  it("should validate configuration with canSetAcceptedToken", async () => {
+    // Valid configuration
+    let [valid, reason] = await wrapperMod.read.canSetAcceptedToken(["WRAP", mockToken.address]);
+    assert.equal(valid, true);
+    assert.equal(reason, "");
+
+    // Invalid: zero address
+    [valid, reason] = await wrapperMod.read.canSetAcceptedToken(["WRAP", "0x0000000000000000000000000000000000000000"]);
+    assert.equal(valid, false);
+    assert.equal(reason, "Invalid token address");
+  });
+
   it("should allow creator to set accepted token", async () => {
     await wrapperMod.write.setAcceptedToken(["WRAP", mockToken.address], { account: creator });
 
@@ -61,6 +73,12 @@ describe("Wrapper", async () => {
   it("should be setup after token is configured", async () => {
     const isSetup = await wrapperMod.read.isSetupFor(["WRAP"]);
     assert.equal(isSetup, true);
+  });
+
+  it("should report token already set via canSetAcceptedToken", async () => {
+    const [valid, reason] = await wrapperMod.read.canSetAcceptedToken(["WRAP", mockToken.address]);
+    assert.equal(valid, false);
+    assert.equal(reason, "Token already set");
   });
 
   it("should prevent setting token twice", async () => {
@@ -84,6 +102,35 @@ describe("Wrapper", async () => {
     await assert.rejects(async () => {
       await wrapperMod.write.setAcceptedToken(["WRAPZ", "0x0000000000000000000000000000000000000000"], { account: creator });
     }, /Invalid token address/);
+  });
+
+  it("should reject token with mismatched decimals", async () => {
+    // Create a totem with 8 decimals
+    await createTotem(
+      totems,
+      market,
+      creator,
+      "WRAP8",
+      8,
+      [{ recipient: wrapperMod.address, amount: 1000n * 10n ** 8n }],
+      { created: [wrapperMod.address], transfer: [wrapperMod.address] }
+    );
+
+    // mockToken has 18 decimals, WRAP8 has 8 decimals - should fail
+    await assert.rejects(async () => {
+      await wrapperMod.write.setAcceptedToken(["WRAP8", mockToken.address], { account: creator });
+    }, /Token decimals must match totem decimals/);
+  });
+
+  it("should accept token with matching decimals", async () => {
+    // Create an 8-decimal mock token
+    const mockToken8 = await viem.deployContract("MockERC20", [8]);
+
+    // WRAP8 has 8 decimals, mockToken8 has 8 decimals - should succeed
+    await wrapperMod.write.setAcceptedToken(["WRAP8", mockToken8.address], { account: creator });
+
+    const acceptedToken = await wrapperMod.read.acceptedToken(["WRAP8"]);
+    assert.equal(acceptedToken.toLowerCase(), mockToken8.address.toLowerCase());
   });
 
   it("should prevent non-creator from setting accepted token", async () => {
@@ -210,5 +257,103 @@ describe("Wrapper", async () => {
     await assert.rejects(async () => {
       await transfer(totems, "WNOTOKEN", holder, wrapperMod2.address, 100n * 10n ** 18n);
     }, /No accepted token configured/);
+  });
+
+  it("should fail wrap when ERC20 transferFrom returns false", async () => {
+    const failingToken = await viem.deployContract("MockERC20Failing", [18]);
+    const wrapperMod3 = await viem.deployContract("Wrapper", [
+      totems.address,
+      creator
+    ]);
+    await publishMod(market, creator, wrapperMod3.address, [Hook.Created, Hook.Transfer]);
+
+    await createTotem(
+      totems,
+      market,
+      creator,
+      "WFAIL1",
+      18,
+      [
+        { recipient: wrapperMod3.address, amount: 1000n * 10n ** 18n },
+        { recipient: holder, amount: 100n * 10n ** 18n }
+      ],
+      { created: [wrapperMod3.address], transfer: [wrapperMod3.address] }
+    );
+
+    await wrapperMod3.write.setAcceptedToken(["WFAIL1", failingToken.address], { account: creator });
+
+    // Mint and approve tokens for holder
+    await failingToken.write.mint([holder, 500n * 10n ** 18n]);
+    await failingToken.write.approve([wrapperMod3.address, 500n * 10n ** 18n], { account: holder });
+
+    // Set transferFrom to fail
+    await failingToken.write.setFailTransferFrom([true]);
+
+    await assert.rejects(async () => {
+      await wrapperMod3.write.wrap(["WFAIL1", 100n * 10n ** 18n], { account: holder });
+    }, /ERC20 transferFrom failed/);
+  });
+
+  it("should fail unwrap when ERC20 transfer returns false", async () => {
+    const failingToken = await viem.deployContract("MockERC20Failing", [18]);
+    const wrapperMod4 = await viem.deployContract("Wrapper", [
+      totems.address,
+      creator
+    ]);
+    await publishMod(market, creator, wrapperMod4.address, [Hook.Created, Hook.Transfer]);
+
+    await createTotem(
+      totems,
+      market,
+      creator,
+      "WFAIL2",
+      18,
+      [
+        { recipient: wrapperMod4.address, amount: 1000n * 10n ** 18n },
+        { recipient: holder, amount: 100n * 10n ** 18n }
+      ],
+      { created: [wrapperMod4.address], transfer: [wrapperMod4.address] }
+    );
+
+    await wrapperMod4.write.setAcceptedToken(["WFAIL2", failingToken.address], { account: creator });
+
+    // Mint tokens to the wrapper so it can send them back during unwrap
+    await failingToken.write.mint([wrapperMod4.address, 500n * 10n ** 18n]);
+
+    // Set transfer to fail
+    await failingToken.write.setFailTransfer([true]);
+
+    // Try to unwrap (transfer totems TO wrapper)
+    await assert.rejects(async () => {
+      await transfer(totems, "WFAIL2", holder, wrapperMod4.address, 50n * 10n ** 18n);
+    }, /ERC20 transfer failed/);
+  });
+
+  it("should revert setAcceptedToken when token decimals do not match totem decimals", async () => {
+    // Fresh wrapper for isolated test
+    const wrapperMod5 = await viem.deployContract("Wrapper", [
+      totems.address,
+      creator
+    ]);
+    await publishMod(market, creator, wrapperMod5.address, [Hook.Created, Hook.Transfer]);
+
+    // Create totem with 6 decimals
+    await createTotem(
+      totems,
+      market,
+      creator,
+      "DECTEST",
+      6,
+      [{ recipient: wrapperMod5.address, amount: 1000n * 10n ** 6n }],
+      { created: [wrapperMod5.address], transfer: [wrapperMod5.address] }
+    );
+
+    // Create ERC20 with 18 decimals (mismatched)
+    const token18 = await viem.deployContract("MockERC20", [18]);
+
+    // This should hit line 39: return (false, "Token decimals must match totem decimals")
+    await assert.rejects(async () => {
+      await wrapperMod5.write.setAcceptedToken(["DECTEST", token18.address], { account: creator });
+    }, /Token decimals must match totem decimals/);
   });
 });

@@ -8,7 +8,7 @@ interface ITotems {
     function transfer(string calldata ticker, address from, address to, uint256 amount, string calldata memo) external;
 }
 
-contract MinerMod is TotemMod, IModMinter, IModCreated, IModTransfer {
+contract Miner is TotemMod, IModMinter, IModCreated, IModTransfer {
     uint256 internal constant DAY = 1 days;
 
     // ticker -> balance

@@ -15,7 +15,7 @@ describe("Miner", async () => {
   const { viem, totems, market, accounts, publicClient } = await setupTotemsTest();
   const [creator, miner, otherMiner] = accounts;
 
-  const minerMod = await viem.deployContract("MinerMod", [
+  const minerMod = await viem.deployContract("Miner", [
     totems.address,
     creator
   ]);
